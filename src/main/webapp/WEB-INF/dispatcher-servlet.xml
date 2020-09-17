@@ -8,9 +8,9 @@
 	http://www.springframework.org/schema/mvc
 	http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <context:component-scan base-package="com.mmall" annotation-config="true"/>
+    <context:component-scan base-package="com.mall" annotation-config="true"/>
 
-    <mvc:annotation-driven>
+    <mvc:annotation-driven>   <!--开启支持springmvc的注解-->
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
                 <property name="supportedMediaTypes">
@@ -21,7 +21,7 @@
                 </property>
             </bean>
             <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
-                <property name="supportedMediaTypes">
+                <property name="supportedMediaTypes">  <!--将supportedMediaTypes注入到上面的类中-->
                     <list>
                         <value>application/json;charset=UTF-8</value>
                     </list>
