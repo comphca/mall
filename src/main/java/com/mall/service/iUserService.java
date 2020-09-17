@@ -6,4 +6,6 @@ import com.mall.pojo.User;
 
 public interface iUserService {
     ServerResponse<User> login(String username, String password);
+
+    ServerResponse register(User user);
 }

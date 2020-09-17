@@ -23,10 +23,25 @@ public class UserController {
     @RequestMapping(value = "login",method = RequestMethod.POST )
     @ResponseBody
     public ServerResponse<User> login(String username, String password, HttpSession session){
+        //登录的时候需要session进行存储会话
         ServerResponse<User> response = iUserService.login(username,password);
         if (response.isSuccess()){
             session.setAttribute(Const.CURRENT_USER, response.getData());
         }
         return response;
+    }
+
+    @RequestMapping(value = "loginout",method = RequestMethod.GET)
+    @ResponseBody
+    //登出直接把session删除就行了
+    public ServerResponse loginout(HttpSession session){
+        session.removeAttribute(Const.CURRENT_USER);
+        return ServerResponse.cerateBySuccess();
+    }
+
+    @RequestMapping(value = "register",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse register(User user){
+        return iUserService.register(user);
     }
 }
