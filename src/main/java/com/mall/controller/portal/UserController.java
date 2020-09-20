@@ -5,6 +5,7 @@ import com.mall.common.Const;
 import com.mall.common.ServerResponse;
 import com.mall.pojo.User;
 import com.mall.service.iUserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,6 +63,26 @@ public class UserController {
         }
         return ServerResponse.cerateBySuccess(user);
     }
+
+    //这个地方将传递方式改为GET就是没办法进行判断，一直会报用户名不存在
+    @RequestMapping(value = "forget_get_question", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse forgetGetQuestion(String username){
+        return iUserService.selectQuestion(username);
+    }
+
+    @RequestMapping(value = "forget_check_answer", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse forgetCheckAnswer(String username, String question, String answer){
+        return iUserService.checkAnswer(username,question,answer);
+    }
+
+    @RequestMapping(value = "forget_reset_password", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse forgetResetPassword(String username, String passwordNew, String forgetToken){
+        return iUserService.forgetRestPassword(username, passwordNew, forgetToken);
+    }
+
 
 
 }

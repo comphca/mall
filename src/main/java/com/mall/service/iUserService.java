@@ -8,4 +8,10 @@ public interface iUserService {
     ServerResponse<User> login(String username, String password);
 
     ServerResponse register(User user);
+
+    ServerResponse selectQuestion(String username);
+
+    ServerResponse checkAnswer(String username, String question, String answer);
+
+    ServerResponse forgetRestPassword(String username, String passwordNew, String forgetToken);
 }
