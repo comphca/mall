@@ -110,4 +110,54 @@ public class UserServiceImpl implements iUserService{
     }
 
 
+    //这里的update返回值如果更新成功就返回1
+    @Override
+    public ServerResponse resetPassword(String passwordOld, String passwordNew, User user) {
+        //在登录状态下修改密码要防止横向越权，手段就是校验当前用户的旧密码是否指向这个用户
+        int count = userMapper.checkPasswod(passwordOld,user.getId());
+        if (count == 0){
+            return ServerResponse.createByErrorMessage("旧密码错误");
+        }
+        user.setPassword(passwordNew);
+        int updateCount = userMapper.updateByPrimaryKeySelective(user);
+        if (updateCount > 0){
+            return ServerResponse.cerateBySuccessMessage("更新成功");
+        }
+
+        return ServerResponse.createByErrorMessage("更新失败");
+    }
+
+    @Override
+    public ServerResponse updateInformation(User user) {
+        //username不能被更新
+        //email也要进行校验是否数据库中已经存在
+        int count = userMapper.checkEmailByUserId(user.getEmail(), user.getId());
+        if (count > 0) {
+            return ServerResponse.createByErrorMessage("email已存在");
+        }
+        User updateUser = new User();
+        updateUser.setId(user.getId());
+        updateUser.setEmail(user.getEmail());
+        updateUser.setPhone(user.getPhone());
+        updateUser.setQuestion(user.getQuestion());
+        updateUser.setAnswer(user.getAnswer());
+
+        int updateCount = userMapper.updateByPrimaryKeySelective(updateUser);
+        if (updateCount > 0){
+            return ServerResponse.cerateBySuccess("更新成功", updateUser);
+        }
+        return ServerResponse.createByErrorMessage("更新失败");
+    }
+
+    @Override
+    public ServerResponse getInformation(Integer id) {
+        User user = userMapper.selectByPrimaryKey(id);
+        if (user == null){
+            return ServerResponse.createByErrorMessage("找不到当前登录用户");
+        }
+        user.setPassword(StringUtils.EMPTY);
+        return ServerResponse.cerateBySuccess(user);
+    }
+
+
 }

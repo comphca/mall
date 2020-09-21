@@ -2,6 +2,7 @@ package com.mall.controller.portal;
 
 
 import com.mall.common.Const;
+import com.mall.common.ResponseCode;
 import com.mall.common.ServerResponse;
 import com.mall.pojo.User;
 import com.mall.service.iUserService;
@@ -81,6 +82,50 @@ public class UserController {
     @ResponseBody
     public ServerResponse forgetResetPassword(String username, String passwordNew, String forgetToken){
         return iUserService.forgetRestPassword(username, passwordNew, forgetToken);
+    }
+
+
+    @RequestMapping(value = "reset_password",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse resetPassword(HttpSession session, String passwordOld, String passwordNew){
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null){
+            return ServerResponse.createByErrorMessage("用户未登录");
+        }
+
+        return iUserService.resetPassword(passwordOld, passwordNew, user);
+    }
+
+
+    //修改用户信息  用户名不能更新
+    @RequestMapping(value = "update_information", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse updateInformation(HttpSession session,User user){
+        User currentUser = (User)session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null){
+            return ServerResponse.createByErrorMessage("用户未登录");
+        }
+        user.setId(currentUser.getId());
+        user.setUsername(currentUser.getUsername());
+        //TODO 这里的泛型必须要加，不然下面的getData不能判定是User类型的数据，没办法使用对应的方法
+        ServerResponse<User> response = iUserService.updateInformation(user);
+        if (response.isSuccess()){
+            //这里上面已经将当前用户的username设置到修改的用户信息里面去，为什么这里还要在设置一次？
+            response.getData().setUsername(currentUser.getUsername());
+            session.setAttribute(Const.CURRENT_USER, response.getData());
+        }
+        return response;
+    }
+
+    //获取用户信息
+    @RequestMapping(value = "get_Information", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse get_information(HttpSession session){
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null){
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录，需要先登录");
+        }
+        return iUserService.getInformation(currentUser.getId());
     }
 
 

@@ -186,4 +186,16 @@
     SET password = #{passwordNew}, update_time = now()
     where username = #{username}
   </update>
+
+  <select id="checkPasswod" resultType="int" parameterType="map">
+    SELECT COUNT(1)
+    FROM mmall_user
+    WHERE password = #{passwordOld} and id = #{id}
+  </select>
+
+  <select id="checkEmailByUserId" resultType="int" parameterType="map">
+    SELECT COUNT(1)
+    FROM mmall_user
+    WHERE email = #{email} and id = #{id}
+  </select>
 </mapper>
