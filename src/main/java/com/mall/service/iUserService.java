@@ -20,4 +20,6 @@ public interface iUserService {
     ServerResponse updateInformation(User user);
 
     ServerResponse getInformation(Integer id);
+
+    ServerResponse checkAdminRole(User user);
 }
