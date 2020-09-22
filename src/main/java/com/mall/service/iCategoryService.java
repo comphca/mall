@@ -4,4 +4,6 @@ import com.mall.common.ServerResponse;
 
 public interface iCategoryService {
     ServerResponse addCategory(String categoryName, Integer parentId);
+
+    ServerResponse updateCategoryName(String categoryName, Integer categoryId);
 }
