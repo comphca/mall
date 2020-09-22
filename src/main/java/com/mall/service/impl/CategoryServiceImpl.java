@@ -5,14 +5,21 @@ import com.mall.dao.CategoryMapper;
 import com.mall.pojo.Category;
 import com.mall.service.iCategoryService;
 import com.mall.service.iCategoryService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.PublicKey;
+import java.util.List;
+
 
 @Service("iCategoryService")
 public class CategoryServiceImpl implements iCategoryService {
+
+    private Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
 
     @Autowired
@@ -52,5 +59,15 @@ public class CategoryServiceImpl implements iCategoryService {
         }
 
 
+    }
+
+    @Override
+    public ServerResponse<List<Category>> getChildrenParallelCategory(Integer categoryId) {
+        //这个sql语句返回值为一个list，resultype写成map
+        List<Category> categoryList = categoryMapper.selectCategoryChildrenByParentId(categoryId);
+        if (CollectionUtils.isEmpty(categoryList)){
+            logger.info("未找到当前分类的子分类");
+        }
+        return ServerResponse.cerateBySuccess(categoryList);
     }
 }

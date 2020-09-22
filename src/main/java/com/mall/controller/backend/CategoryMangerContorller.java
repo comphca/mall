@@ -60,8 +60,27 @@ public class CategoryMangerContorller {
     @ResponseBody
     public ServerResponse setCategoryName(HttpSession session, Integer categoryId, String categoryName){
         User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null){
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getCode(),"用户未登录");
+        }
         if (iUserService.checkAdminRole(user).isSuccess()){
             return iCategoryService.updateCategoryName(categoryName, categoryId);
+        }else {
+            return ServerResponse.createByErrorMessage("不是管理员，没有权限修改");
+        }
+    }
+
+
+    //获取当前大分类的所有直接子类
+    @RequestMapping(value = "get_catrgory", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse getCategory(HttpSession session, @RequestParam(value = "categoryId", defaultValue = "0") Integer categoryId){
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null){
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getCode(),"用户未登录");
+        }
+        if (iUserService.checkAdminRole(user).isSuccess()){
+            return iCategoryService.getChildrenParallelCategory(categoryId);
         }else {
             return ServerResponse.createByErrorMessage("不是管理员，没有权限修改");
         }
