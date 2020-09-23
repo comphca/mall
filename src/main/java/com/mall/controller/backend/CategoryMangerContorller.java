@@ -87,6 +87,22 @@ public class CategoryMangerContorller {
     }
 
 
+    @RequestMapping(value = "get_deep_category", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse getCategoryAndDeepChildrenCategory(HttpSession session, @RequestParam(value = "categoryId", defaultValue =  "0") Integer categoryId){
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null){
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getCode(),"未登录");
+        }
+
+        if (iUserService.checkAdminRole(user).isSuccess()){
+            return iCategoryService.selectCategoryAndChildrenById(categoryId);
+        }else {
+            return ServerResponse.createByErrorMessage("无权限操作");
+        }
+    }
+
+
 
 
 

@@ -1,5 +1,7 @@
 package com.mall.service.impl;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mall.common.ServerResponse;
 import com.mall.dao.CategoryMapper;
 import com.mall.pojo.Category;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.PublicKey;
 import java.util.List;
+import java.util.Set;
 
 
 @Service("iCategoryService")
@@ -69,5 +72,42 @@ public class CategoryServiceImpl implements iCategoryService {
             logger.info("未找到当前分类的子分类");
         }
         return ServerResponse.cerateBySuccess(categoryList);
+    }
+
+
+    //递归查找本节点的id以及子节点的id
+    /*
+    * 主要通过用一个set来进行存储，写一个私有方法先遍历查找当前节点的同级所有节点的，
+    * 在遍历当前节点的所有子节点的时候，如果存在子节点就会调用遍历当前节点的所有同级节点
+    * 直到不存在就会返回
+    * */
+    @Override
+    public ServerResponse selectCategoryAndChildrenById(Integer categoryId) {
+        Set<Category> categorySet = Sets.newHashSet();
+        findChildCategory(categorySet, categoryId);
+
+        List<Integer> categoryIdList = Lists.newArrayList();
+        if (categoryId != null){
+            for (Category categoryItem : categorySet){
+                categoryIdList.add(categoryItem.getId());
+            }
+        }
+
+        return ServerResponse.cerateBySuccess(categoryIdList);
+    }
+
+    private Set<Category> findChildCategory(Set<Category> categorySet, Integer categoryId) {
+        Category category = categoryMapper.selectByPrimaryKey(categoryId);
+        if (category != null){
+            categorySet.add(category);
+        }
+
+        //查子节点
+        List<Category> categoryList = categoryMapper.selectCategoryChildrenByParentId(categoryId);
+        for (Category categoryItem : categoryList){
+            findChildCategory(categorySet,categoryItem.getId());
+        }
+        return categorySet;
+
     }
 }

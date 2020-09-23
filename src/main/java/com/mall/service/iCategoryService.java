@@ -8,4 +8,6 @@ public interface iCategoryService {
     ServerResponse updateCategoryName(String categoryName, Integer categoryId);
 
     ServerResponse getChildrenParallelCategory(Integer categoryId);
+
+    ServerResponse selectCategoryAndChildrenById(Integer categoryId);
 }
