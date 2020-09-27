@@ -2,6 +2,7 @@ package com.mall.controller.backend;
 
 
 import com.mall.common.Const;
+import com.mall.common.ResponseCode;
 import com.mall.common.ServerResponse;
 import com.mall.pojo.Product;
 import com.mall.pojo.User;
@@ -36,12 +37,31 @@ public class ProductManageController {
     {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null){
-            return ServerResponse.createByErrorMessage("未登录，不能增加商品");
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getCode(),"未登录");
         }
 
         if (iUserService.checkAdminRole(user).isSuccess()){
             //校验管理员成功
             return iProductService.saveOrUpdateProduct(product);
+        }else
+        {
+            return ServerResponse.createByErrorMessage("无权限操作");
+        }
+    }
+
+    //设置商品属性，主要针对在售、下架
+    @RequestMapping(value = "/set_sale_status", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse setSaleStatus(HttpSession session, Integer productId, Integer status)
+    {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null)
+        {
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getCode(),"未登录");
+        }
+        if (iUserService.checkAdminRole(user).isSuccess())
+        {
+            return iProductService.setSaleStatus(productId,status);
         }else
         {
             return ServerResponse.createByErrorMessage("无权限操作");

@@ -5,4 +5,6 @@ import com.mall.pojo.Product;
 
 public interface iProductService {
     ServerResponse saveOrUpdateProduct(Product product);
+
+    ServerResponse setSaleStatus(Integer productId, Integer status);
 }

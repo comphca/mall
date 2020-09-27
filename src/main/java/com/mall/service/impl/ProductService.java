@@ -50,4 +50,22 @@ public class ProductService implements iProductService {
         }
         return ServerResponse.createByErrorMessage("更新或新增产品失败");
     }
+
+    @Override
+    public ServerResponse setSaleStatus(Integer productId, Integer status) {
+        if (productId == null || status == null)
+        {
+            return ServerResponse.createByErrorMessage("设置参数出错");
+        }
+        Product product = new Product();
+        product.setId(productId);
+        product.setStatus(status);
+
+        int rowCount = productMapper.updateByPrimaryKeySelective(product);
+        if (rowCount > 0)
+        {
+            return ServerResponse.cerateBySuccessMessage("更新产品状态成功");
+        }
+        return ServerResponse.createByErrorMessage("更新产品状态失败");
+    }
 }
