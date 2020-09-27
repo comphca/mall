@@ -49,7 +49,7 @@ public class ProductManageController {
         }
     }
 
-    //设置商品属性，主要针对在售、下架
+    //通过产品id和产品状态设置商品属性，主要针对在售、下架
     @RequestMapping(value = "/set_sale_status", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse setSaleStatus(HttpSession session, Integer productId, Integer status)
@@ -65,6 +65,26 @@ public class ProductManageController {
         }else
         {
             return ServerResponse.createByErrorMessage("无权限操作");
+        }
+    }
+
+    //产品详情
+    @RequestMapping(value = "detail", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse getDetail(HttpSession session, Integer productId)
+    {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null)
+        {
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getCode(),"未登录");
+        }
+        if (iUserService.checkAdminRole(user).isSuccess())
+        {
+            return iProductService.managerProductDetail(productId);
+        }
+        else
+        {
+            return ServerResponse.createByErrorMessage("没有权限操作");
         }
     }
 }

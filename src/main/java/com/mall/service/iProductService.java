@@ -7,4 +7,6 @@ public interface iProductService {
     ServerResponse saveOrUpdateProduct(Product product);
 
     ServerResponse setSaleStatus(Integer productId, Integer status);
+
+    ServerResponse managerProductDetail(Integer productId);
 }
